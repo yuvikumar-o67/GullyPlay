@@ -177,6 +177,20 @@ router.post("/reset-password/:token", async (req, res) => {
   }
 });
 
+/* =================================================
+   PUBLIC USER LIST (For GullyGang Page)
+================================================= */
+router.get("/public", async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("username createdAt");
+
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching users" });
+  }
+});
+
 
 /* =================================================
    GET ALL USERS (Admin Only)
