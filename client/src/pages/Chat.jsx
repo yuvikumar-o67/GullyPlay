@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
+import API_URL from "../api";
 
 function Chat() {
   const navigate = useNavigate();
@@ -25,11 +25,11 @@ function Chat() {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${API}/api/chat`);
+      const res = await fetch(`${API_URL}/api/chat`);
       const data = await res.json();
       setMessages(data);
     } catch (err) {
-      console.error("Chat fetch error:", err);
+      console.error(err);
     }
   };
 
@@ -40,7 +40,7 @@ function Chat() {
     formData.append("message", text);
     if (image) formData.append("image", image);
 
-    await fetch(`${API}/api/chat`, {
+    await fetch(`${API_URL}/api/chat`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -53,25 +53,27 @@ function Chat() {
     fetchMessages();
   };
 
-  const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
-
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <button onClick={() => navigate("/home")} style={styles.back}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+
+      {/* Header */}
+      <div style={{
+        padding: "15px",
+        background: "#1B1B2F",
+        color: "white",
+        display: "flex",
+        alignItems: "center"
+      }}>
+        <button onClick={() => navigate("/home")} style={{ marginRight: "10px" }}>
           ←
         </button>
-        <h3 style={{ margin: 0 }}>GullyChat</h3>
+        <h3 style={{ margin: 0 }}>Gully Chat</h3>
       </div>
 
-      <div style={styles.chatBox}>
+      {/* Chat Body */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "15px" }}>
         {messages.map((msg) => {
-          const isMine = msg.senderName === userName;
+          const isMine = msg.userId?.username === userName;
 
           return (
             <div
@@ -79,73 +81,56 @@ function Chat() {
               style={{
                 display: "flex",
                 justifyContent: isMine ? "flex-end" : "flex-start",
-                marginBottom: "15px"
+                marginBottom: "10px"
               }}
             >
-              <div style={{ maxWidth: "75%" }}>
-                <div
-                  style={{
-                    ...styles.bubble,
-                    backgroundColor: isMine ? "#00FF90" : "#FF2BF1",
-                    color: "black",
-                    borderTopRightRadius: isMine ? "0px" : "15px",
-                    borderTopLeftRadius: isMine ? "15px" : "0px"
-                  }}
-                >
-                  {msg.message && <p style={{ margin: 0 }}>{msg.message}</p>}
+              <div style={{
+                background: isMine ? "#8AC926" : "#FFCA3A",
+                padding: "10px",
+                borderRadius: "10px",
+                maxWidth: "70%"
+              }}>
+                {msg.message && <p>{msg.message}</p>}
 
-                  {msg.image && (
-                    <img
-                      src={`${API}/uploads/${msg.image}`}
-                      alt=""
-                      style={{
-                        width: "180px",
-                        borderRadius: "10px",
-                        marginTop: "5px"
-                      }}
-                    />
-                  )}
-                </div>
+                {msg.image && (
+                  <img
+                    src={`${API_URL}/uploads/${msg.image}`}
+                    alt=""
+                    style={{ width: "150px", borderRadius: "10px" }}
+                  />
+                )}
 
-                <div
-                  style={{
-                    fontSize: "12px",
-                    marginTop: "4px",
-                    textAlign: isMine ? "right" : "left",
-                    color: "#FFD700"
-                  }}
-                >
-                  {msg.senderName} • {formatTime(msg.createdAt)}
-                </div>
+                <small style={{ display: "block", marginTop: "5px" }}>
+                  {msg.userId?.username}
+                </small>
               </div>
             </div>
           );
         })}
-
         <div ref={bottomRef}></div>
       </div>
 
-      <div style={styles.inputBar}>
-        <label style={styles.plus}>
-          +
-          <input
-            type="file"
-            hidden
-            onChange={(e) => setImage(e.target.files[0])}
-          />
-        </label>
-
+      {/* Input */}
+      <div style={{
+        padding: "10px",
+        display: "flex",
+        gap: "10px"
+      }}>
         <input
-          style={styles.input}
-          placeholder="Type a message..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          type="file"
+          onChange={(e) => setImage(e.target.files[0])}
         />
 
-        <button onClick={sendMessage} style={styles.send}>
-          ➤
-        </button>
+        <input
+          style={{ flex: 1 }}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Type message..."
+        />
+
+        <button onClick={sendMessage}>Send</button>
       </div>
+
     </div>
   );
 }
