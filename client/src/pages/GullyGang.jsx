@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import API_URL from "../api";
 
 function GullyGang() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("/api/users")
+    fetch(`${API_URL}/api/users`)
       .then(res => res.json())
       .then(data => setUsers(data))
       .catch(err => console.error(err));
@@ -16,7 +17,7 @@ function GullyGang() {
 
       {users.map((user) => (
         <div key={user._id}>
-          {user.name} (@{user.username})
+          {user.username}
         </div>
       ))}
     </div>

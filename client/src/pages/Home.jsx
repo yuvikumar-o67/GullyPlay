@@ -1,5 +1,4 @@
 import API_URL from "../api";
-
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -10,7 +9,7 @@ function Home() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    fetch("${API_URL}/api/notifications")
+    fetch(`${API_URL}/api/notifications`)
       .then((res) => res.json())
       .then((data) => setNotifications(data));
   }, []);
@@ -42,7 +41,6 @@ function Home() {
           </button>
         </div>
 
-        {/* Scrolling Notifications */}
         {notifications.length > 0 && (
           <div
             style={{
@@ -88,6 +86,7 @@ function Home() {
           >
             GullyGang
           </button>
+
           <button
             className="full-btn"
             style={{ backgroundColor: "#6A4C93", color: "white" }}
@@ -95,6 +94,7 @@ function Home() {
           >
             Live Sports
           </button>
+
           <button
             className="full-btn"
             style={{ backgroundColor: "#6A4C93", color: "white" }}
