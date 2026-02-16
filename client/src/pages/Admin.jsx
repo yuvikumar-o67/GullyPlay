@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
-
-
+import API_URL from "../api";
 
 function Admin() {
   const navigate = useNavigate();
@@ -24,13 +22,13 @@ function Admin() {
   }, []);
 
   const fetchEvents = async () => {
-    const res = await fetch('${API_URL}/api/events');
+    const res = await fetch(`${API_URL}/api/events`);
     const data = await res.json();
     setEvents(data);
   };
 
   const fetchNotifications = async () => {
-    const res = await fetch('${API_URL}/api/notifications');
+    const res = await fetch(`${API_URL}/api/notifications`);
     const data = await res.json();
     setNotifications(data);
   };
@@ -44,7 +42,10 @@ function Admin() {
   };
 
   const handleAddEvent = async () => {
-    if (!title || !location || !time) return alert("Fill all fields");
+    if (!title || !location || !time) {
+      alert("Fill all fields");
+      return;
+    }
 
     const response = await fetch(`${API_URL}/api/events`, {
       method: "POST",
@@ -55,7 +56,10 @@ function Admin() {
       body: JSON.stringify({ title, location, time })
     });
 
-    if (!response.ok) return alert("Not authorized");
+    if (!response.ok) {
+      alert("Not authorized or error occurred");
+      return;
+    }
 
     setTitle("");
     setLocation("");
@@ -64,7 +68,7 @@ function Admin() {
   };
 
   const handleDeleteEvent = async (id) => {
-    await fetch(`${API}/events/${id}`, {
+    await fetch(`${API_URL}/api/events/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -72,7 +76,10 @@ function Admin() {
   };
 
   const handleSendNotification = async () => {
-    if (!notification) return alert("Write a message");
+    if (!notification) {
+      alert("Write a message");
+      return;
+    }
 
     const response = await fetch(`${API_URL}/api/notifications`, {
       method: "POST",
@@ -83,7 +90,10 @@ function Admin() {
       body: JSON.stringify({ message: notification })
     });
 
-    if (!response.ok) return alert("Failed");
+    if (!response.ok) {
+      alert("Failed to send notification");
+      return;
+    }
 
     setNotification("");
     fetchNotifications();
@@ -121,19 +131,19 @@ function Admin() {
   return (
     <div className="page" style={{ textAlign: "center" }}>
       <h2>Admin Panel</h2>
+
       <div className="card" style={{ maxWidth: "450px", margin: "0 auto" }}>
+
         <h3>Add Event</h3>
-
-        <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
-        <input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} />
-        <input type="time" value={time} onChange={e => setTime(e.target.value)} />
-
+        <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+        <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
         <button className="full-btn" onClick={handleAddEvent}>Add Event</button>
 
         <hr />
 
         <h3>Send Notification</h3>
-        <input placeholder="Message" value={notification} onChange={e => setNotification(e.target.value)} />
+        <input placeholder="Message" value={notification} onChange={(e) => setNotification(e.target.value)} />
         <button className="full-btn" onClick={handleSendNotification}>Send</button>
 
         {notifications.map(n => (
@@ -150,13 +160,14 @@ function Admin() {
           <div key={user._id}>
             <strong>{user.username}</strong>
             <p>{user.email}</p>
-            {user.isBanned && <p style={{color:"red"}}>BANNED</p>}
+            {user.isBanned && <p style={{ color: "red" }}>BANNED</p>}
             {!user.isBanned && <button onClick={() => handleBanUser(user._id)}>Ban</button>}
             <button onClick={() => handleRemoveUser(user._id)}>Remove</button>
           </div>
         ))}
 
         <button onClick={handleLogout}>Logout</button>
+
       </div>
     </div>
   );
