@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API_URL from "../api";
+import API from "../api";
 
 function Admin() {
   const navigate = useNavigate();
@@ -22,19 +22,19 @@ function Admin() {
   }, []);
 
   const fetchEvents = async () => {
-    const res = await fetch(`${API_URL}/api/events`);
+    const res = await fetch(`${API}/api/events`);
     const data = await res.json();
     setEvents(data);
   };
 
   const fetchNotifications = async () => {
-    const res = await fetch(`${API_URL}/api/notifications`);
+    const res = await fetch(`${API}/api/notifications`);
     const data = await res.json();
     setNotifications(data);
   };
 
   const fetchUsers = async () => {
-    const res = await fetch(`${API_URL}/api/users`, {
+    const res = await fetch(`${API}/api/users`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -47,7 +47,7 @@ function Admin() {
       return;
     }
 
-    const response = await fetch(`${API_URL}/api/events`, {
+    const response = await fetch(`${API}/api/events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,21 +57,23 @@ function Admin() {
     });
 
     if (!response.ok) {
-      alert("Not authorized or error occurred");
+      alert("Not authorized");
       return;
     }
 
     setTitle("");
     setLocation("");
     setTime("");
+
     fetchEvents();
   };
 
   const handleDeleteEvent = async (id) => {
-    await fetch(`${API_URL}/api/events/${id}`, {
+    await fetch(`${API}/api/events/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
+
     fetchEvents();
   };
 
@@ -81,7 +83,7 @@ function Admin() {
       return;
     }
 
-    const response = await fetch(`${API_URL}/api/notifications`, {
+    const response = await fetch(`${API}/api/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +93,7 @@ function Admin() {
     });
 
     if (!response.ok) {
-      alert("Failed to send notification");
+      alert("Failed");
       return;
     }
 
@@ -100,26 +102,29 @@ function Admin() {
   };
 
   const handleDeleteNotification = async (id) => {
-    await fetch(`${API_URL}/api/notifications/${id}`, {
+    await fetch(`${API}/api/notifications/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
+
     fetchNotifications();
   };
 
   const handleBanUser = async (id) => {
-    await fetch(`${API_URL}/api/users/ban/${id}`, {
+    await fetch(`${API}/api/users/ban/${id}`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` }
     });
+
     fetchUsers();
   };
 
   const handleRemoveUser = async (id) => {
-    await fetch(`${API_URL}/api/users/${id}`, {
+    await fetch(`${API}/api/users/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
+
     fetchUsers();
   };
 
@@ -133,41 +138,15 @@ function Admin() {
       <h2>Admin Panel</h2>
 
       <div className="card" style={{ maxWidth: "450px", margin: "0 auto" }}>
-
         <h3>Add Event</h3>
+
         <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
         <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-        <button className="full-btn" onClick={handleAddEvent}>Add Event</button>
 
-        <hr />
-
-        <h3>Send Notification</h3>
-        <input placeholder="Message" value={notification} onChange={(e) => setNotification(e.target.value)} />
-        <button className="full-btn" onClick={handleSendNotification}>Send</button>
-
-        {notifications.map(n => (
-          <div key={n._id}>
-            <p>{n.message}</p>
-            <button onClick={() => handleDeleteNotification(n._id)}>Delete</button>
-          </div>
-        ))}
-
-        <hr />
-
-        <h3>Manage Users</h3>
-        {users.map(user => (
-          <div key={user._id}>
-            <strong>{user.username}</strong>
-            <p>{user.email}</p>
-            {user.isBanned && <p style={{ color: "red" }}>BANNED</p>}
-            {!user.isBanned && <button onClick={() => handleBanUser(user._id)}>Ban</button>}
-            <button onClick={() => handleRemoveUser(user._id)}>Remove</button>
-          </div>
-        ))}
-
-        <button onClick={handleLogout}>Logout</button>
-
+        <button className="full-btn" onClick={handleAddEvent}>
+          Add Event
+        </button>
       </div>
     </div>
   );
