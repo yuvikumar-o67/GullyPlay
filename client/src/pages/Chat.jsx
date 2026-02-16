@@ -24,9 +24,13 @@ function Chat() {
   }, [messages]);
 
   const fetchMessages = async () => {
-    const res = await fetch(`${API_URL}/api/chat`);
-    const data = await res.json();
-    setMessages(data);
+    try {
+      const res = await fetch(`${API}/api/chat`);
+      const data = await res.json();
+      setMessages(data);
+    } catch (err) {
+      console.error("Chat fetch error:", err);
+    }
   };
 
   const sendMessage = async () => {
@@ -36,7 +40,7 @@ function Chat() {
     formData.append("message", text);
     if (image) formData.append("image", image);
 
-    await fetch(`${API_URL}/api/chat`, {
+    await fetch(`${API}/api/chat`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -92,7 +96,7 @@ function Chat() {
 
                   {msg.image && (
                     <img
-                      src={`${API_URL}/api/uploads/${msg.image}`}
+                      src={`${API}/uploads/${msg.image}`}
                       alt=""
                       style={{
                         width: "180px",
@@ -145,4 +149,5 @@ function Chat() {
     </div>
   );
 }
+
 export default Chat;
