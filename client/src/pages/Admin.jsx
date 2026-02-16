@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api";
 
-const API = "https://gullyplay-backend.onrender.com/api";
+
 
 function Admin() {
   const navigate = useNavigate();
@@ -23,19 +24,19 @@ function Admin() {
   }, []);
 
   const fetchEvents = async () => {
-    const res = await fetch(`${API}/events`);
+    const res = await fetch('${API_URL}/api/events');
     const data = await res.json();
     setEvents(data);
   };
 
   const fetchNotifications = async () => {
-    const res = await fetch(`${API}/notifications`);
+    const res = await fetch('${API_URL}/api/notifications');
     const data = await res.json();
     setNotifications(data);
   };
 
   const fetchUsers = async () => {
-    const res = await fetch(`${API}/users`, {
+    const res = await fetch(`${API_URL}/api/users`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -45,7 +46,7 @@ function Admin() {
   const handleAddEvent = async () => {
     if (!title || !location || !time) return alert("Fill all fields");
 
-    const response = await fetch(`${API}/events`, {
+    const response = await fetch(`${API_URL}/api/events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +74,7 @@ function Admin() {
   const handleSendNotification = async () => {
     if (!notification) return alert("Write a message");
 
-    const response = await fetch(`${API}/notifications`, {
+    const response = await fetch(`${API_URL}/api/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +90,7 @@ function Admin() {
   };
 
   const handleDeleteNotification = async (id) => {
-    await fetch(`${API}/notifications/${id}`, {
+    await fetch(`${API_URL}/api/notifications/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -97,7 +98,7 @@ function Admin() {
   };
 
   const handleBanUser = async (id) => {
-    await fetch(`${API}/users/ban/${id}`, {
+    await fetch(`${API_URL}/api/users/ban/${id}`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -105,7 +106,7 @@ function Admin() {
   };
 
   const handleRemoveUser = async (id) => {
-    await fetch(`${API}/users/${id}`, {
+    await fetch(`${API_URL}/api/users/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });

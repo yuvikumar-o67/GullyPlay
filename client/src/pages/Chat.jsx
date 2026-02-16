@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API = "https://gullyplay-backend.onrender.com";
+import API from "../api";
 
 function Chat() {
   const navigate = useNavigate();
@@ -25,7 +24,7 @@ function Chat() {
   }, [messages]);
 
   const fetchMessages = async () => {
-    const res = await fetch(`${API}/api/chat`);
+    const res = await fetch(`${API_URL}/api/chat`);
     const data = await res.json();
     setMessages(data);
   };
@@ -37,7 +36,7 @@ function Chat() {
     formData.append("message", text);
     if (image) formData.append("image", image);
 
-    await fetch(`${API}/api/chat`, {
+    await fetch(`${API_URL}/api/chat`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -93,7 +92,7 @@ function Chat() {
 
                   {msg.image && (
                     <img
-                      src={`${API}/uploads/${msg.image}`}
+                      src={`${API_URL}/api/uploads/${msg.image}`}
                       alt=""
                       style={{
                         width: "180px",
