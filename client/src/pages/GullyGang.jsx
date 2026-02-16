@@ -4,9 +4,10 @@ function GullyGang() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/users")
+    fetch("/api/users")
       .then(res => res.json())
-      .then(data => setUsers(data));
+      .then(data => setUsers(data))
+      .catch(err => console.error(err));
   }, []);
 
   return (

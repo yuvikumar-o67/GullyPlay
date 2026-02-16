@@ -1,3 +1,5 @@
+import API_URL from "../api";
+
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -10,7 +12,7 @@ function Events() {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/events");
+      const response = await fetch("${API_URL}/api/events");
       const data = await response.json();
       setEvents(data);
     } catch (error) {
@@ -27,14 +29,14 @@ function Events() {
     }
 
     try {
-      await fetch(`http://localhost:3001/api/events/${eventId}/react`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ status })
-      });
+  await fetch(`${API_URL}/api/events/${eventId}/react`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ status })
+  });
 
       fetchEvents();
     } catch (error) {

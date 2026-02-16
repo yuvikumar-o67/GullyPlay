@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API = "https://gullyplay-backend.onrender.com";
+
 function Chat() {
   const navigate = useNavigate();
   const userName = localStorage.getItem("userName");
@@ -23,7 +25,7 @@ function Chat() {
   }, [messages]);
 
   const fetchMessages = async () => {
-    const res = await fetch("http://localhost:3001/api/chat");
+    const res = await fetch(`${API}/api/chat`);
     const data = await res.json();
     setMessages(data);
   };
@@ -35,7 +37,7 @@ function Chat() {
     formData.append("message", text);
     if (image) formData.append("image", image);
 
-    await fetch("http://localhost:3001/api/chat", {
+    await fetch(`${API}/api/chat`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -57,8 +59,6 @@ function Chat() {
 
   return (
     <div style={styles.container}>
-
-      {/* HEADER */}
       <div style={styles.header}>
         <button onClick={() => navigate("/home")} style={styles.back}>
           ←
@@ -66,7 +66,6 @@ function Chat() {
         <h3 style={{ margin: 0 }}>GullyChat</h3>
       </div>
 
-      {/* CHAT BODY */}
       <div style={styles.chatBox}>
         {messages.map((msg) => {
           const isMine = msg.senderName === userName;
@@ -81,7 +80,6 @@ function Chat() {
               }}
             >
               <div style={{ maxWidth: "75%" }}>
-                
                 <div
                   style={{
                     ...styles.bubble,
@@ -95,7 +93,7 @@ function Chat() {
 
                   {msg.image && (
                     <img
-                      src={`http://localhost:3001/uploads/${msg.image}`}
+                      src={`${API}/uploads/${msg.image}`}
                       alt=""
                       style={{
                         width: "180px",
@@ -106,7 +104,6 @@ function Chat() {
                   )}
                 </div>
 
-                {/* NAME + TIME BELOW */}
                 <div
                   style={{
                     fontSize: "12px",
@@ -117,7 +114,6 @@ function Chat() {
                 >
                   {msg.senderName} • {formatTime(msg.createdAt)}
                 </div>
-
               </div>
             </div>
           );
@@ -126,7 +122,6 @@ function Chat() {
         <div ref={bottomRef}></div>
       </div>
 
-      {/* INPUT AREA */}
       <div style={styles.inputBar}>
         <label style={styles.plus}>
           +
@@ -151,72 +146,3 @@ function Chat() {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    backgroundColor: "#0F0F1B",
-    fontFamily: "monospace"
-  },
-  header: {
-    padding: "15px",
-    backgroundColor: "#1B1B2F",
-    color: "#00FF90",
-    display: "flex",
-    alignItems: "center",
-    gap: "15px",
-    borderBottom: "2px solid #FF2BF1"
-  },
-  back: {
-    background: "none",
-    border: "none",
-    color: "#00FF90",
-    fontSize: "20px",
-    cursor: "pointer"
-  },
-  chatBox: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "15px"
-  },
-  bubble: {
-    padding: "12px",
-    borderRadius: "15px",
-    boxShadow: "0 0 8px rgba(255, 0, 255, 0.6)"
-  },
-  inputBar: {
-    display: "flex",
-    padding: "12px",
-    backgroundColor: "#1B1B2F",
-    alignItems: "center",
-    gap: "10px",
-    borderTop: "2px solid #00FF90"
-  },
-  plus: {
-    fontSize: "22px",
-    color: "#FF2BF1",
-    cursor: "pointer"
-  },
-  input: {
-    flex: 1,
-    padding: "10px",
-    borderRadius: "20px",
-    border: "none",
-    outline: "none",
-    backgroundColor: "#2C2C54",
-    color: "white"
-  },
-  send: {
-    backgroundColor: "#00FF90",
-    border: "none",
-    color: "black",
-    padding: "10px 15px",
-    borderRadius: "50%",
-    cursor: "pointer",
-    fontWeight: "bold"
-  }
-};
-
-export default Chat;

@@ -10,16 +10,13 @@ function ForgotPassword() {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:3001/api/users/forgot-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ email })
-        }
-      );
+      const response = await fetch("/api/users/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
 
       const data = await response.json();
 
@@ -31,6 +28,7 @@ function ForgotPassword() {
       alert("OTP sent to your email ✅");
 
     } catch (error) {
+      console.error(error);
       alert("Something went wrong");
     }
   };

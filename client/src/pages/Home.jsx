@@ -1,3 +1,5 @@
+import API_URL from "../api";
+
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -8,7 +10,7 @@ function Home() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/notifications")
+    fetch("${API_URL}/api/notifications")
       .then((res) => res.json())
       .then((data) => setNotifications(data));
   }, []);

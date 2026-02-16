@@ -1,3 +1,5 @@
+import API_URL from "../api";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +28,7 @@ function LiveSports() {
 
 
   const fetchSports = async () => {
-    const res = await fetch("http://localhost:3001/api/live-sports");
+    const res = await fetch("${API_URL}/api/live-sports");
     const data = await res.json();
     setSports(data);
   };
@@ -43,7 +45,7 @@ function LiveSports() {
     formData.append("field", field);
     formData.append("image", image);
 
-    const response = await fetch("http://localhost:3001/api/live-sports", {
+    const response = await fetch("${API_URL}/api/live-sports", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -121,7 +123,7 @@ function LiveSports() {
             <p>Posted by: {sport.userId?.name}</p>
 
             <img
-              src={`http://localhost:3001/uploads/${sport.image}`}
+              src={`${API_URL}/uploads/${sport.image}`}
               alt="live"
               style={{ width: "100%", borderRadius: "10px", marginTop: "10px" }}
             />

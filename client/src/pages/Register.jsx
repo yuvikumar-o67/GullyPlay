@@ -10,7 +10,7 @@ function Register() {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/users/register", {
+      const response = await fetch("${API_URL}/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

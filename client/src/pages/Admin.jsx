@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API = "https://gullyplay-backend.onrender.com/api";
+
 function Admin() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -21,19 +23,19 @@ function Admin() {
   }, []);
 
   const fetchEvents = async () => {
-    const res = await fetch("http://localhost:3001/api/events");
+    const res = await fetch(`${API}/events`);
     const data = await res.json();
     setEvents(data);
   };
 
   const fetchNotifications = async () => {
-    const res = await fetch("http://localhost:3001/api/notifications");
+    const res = await fetch(`${API}/notifications`);
     const data = await res.json();
     setNotifications(data);
   };
 
   const fetchUsers = async () => {
-    const res = await fetch("http://localhost:3001/api/users", {
+    const res = await fetch(`${API}/users`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -41,12 +43,9 @@ function Admin() {
   };
 
   const handleAddEvent = async () => {
-    if (!title || !location || !time) {
-      alert("Fill all fields");
-      return;
-    }
+    if (!title || !location || !time) return alert("Fill all fields");
 
-    const response = await fetch("http://localhost:3001/api/events", {
+    const response = await fetch(`${API}/events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,10 +54,7 @@ function Admin() {
       body: JSON.stringify({ title, location, time })
     });
 
-    if (!response.ok) {
-      alert("Not authorized");
-      return;
-    }
+    if (!response.ok) return alert("Not authorized");
 
     setTitle("");
     setLocation("");
@@ -67,21 +63,17 @@ function Admin() {
   };
 
   const handleDeleteEvent = async (id) => {
-    await fetch(`http://localhost:3001/api/events/${id}`, {
+    await fetch(`${API}/events/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
-
     fetchEvents();
   };
 
   const handleSendNotification = async () => {
-    if (!notification) {
-      alert("Write a message");
-      return;
-    }
+    if (!notification) return alert("Write a message");
 
-    const response = await fetch("http://localhost:3001/api/notifications", {
+    const response = await fetch(`${API}/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -90,43 +82,33 @@ function Admin() {
       body: JSON.stringify({ message: notification })
     });
 
-    if (!response.ok) {
-      alert("Failed to send notification");
-      return;
-    }
+    if (!response.ok) return alert("Failed");
 
     setNotification("");
     fetchNotifications();
   };
 
   const handleDeleteNotification = async (id) => {
-    await fetch(`http://localhost:3001/api/notifications/${id}`, {
+    await fetch(`${API}/notifications/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
-
     fetchNotifications();
   };
 
-  /* =========================
-     USER MANAGEMENT
-  ========================= */
-
   const handleBanUser = async (id) => {
-    await fetch(`http://localhost:3001/api/users/ban/${id}`, {
+    await fetch(`${API}/users/ban/${id}`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` }
     });
-
     fetchUsers();
   };
 
   const handleRemoveUser = async (id) => {
-    await fetch(`http://localhost:3001/api/users/${id}`, {
+    await fetch(`${API}/users/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
-
     fetchUsers();
   };
 
@@ -137,141 +119,43 @@ function Admin() {
 
   return (
     <div className="page" style={{ textAlign: "center" }}>
-      <h2 style={{ marginBottom: "25px" }}>Admin Panel</h2>
-
+      <h2>Admin Panel</h2>
       <div className="card" style={{ maxWidth: "450px", margin: "0 auto" }}>
+        <h3>Add Event</h3>
 
-        {/* ADD EVENT */}
-        <h3>Add Upcoming Event</h3>
+        <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
+        <input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} />
+        <input type="time" value={time} onChange={e => setTime(e.target.value)} />
 
-        <input
-          placeholder="Event Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <button className="full-btn" onClick={handleAddEvent}>Add Event</button>
 
-        <input
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+        <hr />
 
-        <input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-        />
-
-        <button
-          className="full-btn"
-          style={{ backgroundColor: "#6A4C93", color: "white", marginTop: "10px" }}
-          onClick={handleAddEvent}
-        >
-          Add Event
-        </button>
-
-        <hr style={{ margin: "30px 0" }} />
-
-        {/* NOTIFICATIONS */}
         <h3>Send Notification</h3>
+        <input placeholder="Message" value={notification} onChange={e => setNotification(e.target.value)} />
+        <button className="full-btn" onClick={handleSendNotification}>Send</button>
 
-        <input
-          placeholder="Notification message"
-          value={notification}
-          onChange={(e) => setNotification(e.target.value)}
-        />
-
-        <button
-          className="full-btn"
-          style={{ backgroundColor: "#FFCA3A", marginTop: "10px" }}
-          onClick={handleSendNotification}
-        >
-          Send Notification
-        </button>
-
-        {notifications.map((n) => (
-          <div key={n._id} className="event-card">
+        {notifications.map(n => (
+          <div key={n._id}>
             <p>{n.message}</p>
-
-            <button
-              onClick={() => handleDeleteNotification(n._id)}
-              className="small-btn"
-              style={{ backgroundColor: "#D62828", color: "white" }}
-            >
-              Delete
-            </button>
+            <button onClick={() => handleDeleteNotification(n._id)}>Delete</button>
           </div>
         ))}
 
-        <hr style={{ margin: "30px 0" }} />
+        <hr />
 
-        {/* MANAGE EVENTS */}
-        <h3>Manage Events</h3>
-
-        {events.map((event) => (
-          <div key={event._id} className="event-card">
-            <strong>{event.title}</strong>
-            <p>{event.location} • {event.time}</p>
-
-            <button
-              onClick={() => handleDeleteEvent(event._id)}
-              className="small-btn"
-              style={{ backgroundColor: "#D62828", color: "white" }}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-
-        <hr style={{ margin: "30px 0" }} />
-
-        {/* MANAGE USERS */}
         <h3>Manage Users</h3>
-
-        {users.map((user) => (
-          <div key={user._id} className="event-card">
-            <strong>{user.name}</strong>
+        {users.map(user => (
+          <div key={user._id}>
+            <strong>{user.username}</strong>
             <p>{user.email}</p>
-
-            {user.isBanned && (
-              <p style={{ color: "red" }}>🚫 BANNED</p>
-            )}
-
-            {!user.isBanned && (
-              <button
-                onClick={() => handleBanUser(user._id)}
-                className="small-btn"
-                style={{
-                  backgroundColor: "black",
-                  color: "white",
-                  marginRight: "5px"
-                }}
-              >
-                Ban
-              </button>
-            )}
-
-            <button
-              onClick={() => handleRemoveUser(user._id)}
-              className="small-btn"
-              style={{
-                backgroundColor: "#D62828",
-                color: "white"
-              }}
-            >
-              Remove
-            </button>
+            {user.isBanned && <p style={{color:"red"}}>BANNED</p>}
+            {!user.isBanned && <button onClick={() => handleBanUser(user._id)}>Ban</button>}
+            <button onClick={() => handleRemoveUser(user._id)}>Remove</button>
           </div>
         ))}
 
-        <button
-          onClick={handleLogout}
-          className="small-btn"
-          style={{ marginTop: "25px", backgroundColor: "#FF595E", color: "white" }}
-        >
-          Logout
-        </button>
-
+        <button onClick={handleLogout}>Logout</button>
       </div>
     </div>
   );
