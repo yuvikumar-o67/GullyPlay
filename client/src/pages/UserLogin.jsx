@@ -10,7 +10,7 @@ function UserLogin() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("${API_URL}/api/users/login", {
+      const response = await fetch(`${API_URL}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -73,7 +73,6 @@ function UserLogin() {
           Login
         </button>
 
-        {/* 👇 Forgot Password */}
         <p
           style={{
             marginTop: "18px",
